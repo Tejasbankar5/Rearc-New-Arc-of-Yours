@@ -33,7 +33,7 @@ export const generateArc = async (req, res) => {
     Return ONLY the JSON. No markdown backticks or explanations.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: `You are an elite mentor. You output strict JSON without backticks.`,
@@ -162,7 +162,7 @@ export const verifyTask = async (req, res) => {
     }`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: `You output strict JSON. You are a strict mentor who rejects low effort.`,
@@ -236,7 +236,7 @@ export const aiChat = async (req, res) => {
     Respond directly to the user. Use markdown. Be concise, extremely helpful, and adapt to their current context (e.g., if they are on day 14 of an MLOps arc, give MLOps related advice).`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: `You are an elite mentor AI. Keep responses under 300 words unless code is needed. Use markdown formatting.`,
