@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  createdAt DateTime @default(now())
+  arcs      Arc[]
+}
+
+model Arc {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  targetField    String
+  goals          String
+  availableHours Int
+  weakAreas      String
+  status         String   @default("ACTIVE")
+  startDate      DateTime @default(now())
+  endDate        DateTime
+  tasks          Task[]
+  dailyLogs      DailyLog[]
+}
+
+model Task {
+  id                 String   @id @default(uuid())
+  arcId              String
+  arc                Arc      @relation(fields: [arcId], references: [id])
+  date               DateTime
+  time               String
+  description        String
+  completed          Boolean  @default(false)
+  difficulty         String?  // EASY, MEDIUM, HARD
+  confidenceScore    Int?     // 0-100
+  aiVerificationLog  String?
+  aiVerified         Boolean  @default(false)
+}
+
+model DailyLog {
+  id              String   @id @default(uuid())
+  arcId           String
+  arc             Arc      @relation(fields: [arcId], references: [id])
+  date            DateTime @default(now())
+  focusHours      Float
+  aiScore         Int?
+  aiFeedback      String?
+  streakContinued Boolean  @default(true)
+}
