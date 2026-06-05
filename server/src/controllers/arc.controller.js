@@ -6,6 +6,24 @@ if (process.env.GEMINI_API_KEY) {
   ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 }
 
+const generateContentWithFallback = async (params) => {
+  if (!ai) throw new Error('AI not configured');
+  try {
+    return await ai.models.generateContent(params);
+  } catch (err) {
+    const errorMsg = err.message || '';
+    if (params.model !== 'gemini-1.5-flash') {
+      console.warn(`Model ${params.model} failed. Falling back to gemini-1.5-flash... Error:`, errorMsg);
+      return await ai.models.generateContent({
+        ...params,
+        model: 'gemini-1.5-flash'
+      });
+    }
+    throw err;
+  }
+};
+
+
 export const generateArc = async (req, res) => {
   try {
     const { targetField, goals, availableHours, weakAreas } = req.body;
@@ -32,7 +50,7 @@ export const generateArc = async (req, res) => {
     ]
     Return ONLY the JSON. No markdown backticks or explanations.`;
 
-    const response = await ai.models.generateContent({
+    const response = await generateContentWithFallback({
       model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
@@ -161,7 +179,7 @@ export const verifyTask = async (req, res) => {
       "feedback": "Overall good, but can be deeper."
     }`;
 
-    const response = await ai.models.generateContent({
+    const response = await generateContentWithFallback({
       model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
@@ -235,7 +253,7 @@ export const aiChat = async (req, res) => {
     
     Respond directly to the user. Use markdown. Be concise, extremely helpful, and adapt to their current context (e.g., if they are on day 14 of an MLOps arc, give MLOps related advice).`;
 
-    const response = await ai.models.generateContent({
+    const response = await generateContentWithFallback({
       model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
