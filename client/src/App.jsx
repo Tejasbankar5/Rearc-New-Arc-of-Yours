@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Shield, TrendingUp, ChevronRight, Activity, Cpu, LogOut, LayoutDashboard, Calendar as CalendarIcon, CheckSquare, Target, Settings, Crown } from 'lucide-react';
@@ -125,348 +125,389 @@ const AppShell = ({ children }) => {
   );
 };
 
-// Floating Spores (Upside Down Ash) component
-const FloatingSpores = () => {
-  const sporeCount = 45;
-  const spores = Array.from({ length: sporeCount }).map((_, i) => {
-    const size = Math.random() * 4 + 2; // 2px to 6px
-    const left = Math.random() * 100; // 0% to 100%
-    const delay = Math.random() * 8; // 0s to 8s
-    const duration = Math.random() * 6 + 6; // 6s to 12s
-    return (
-      <div
-        key={i}
-        className="spore"
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          left: `${left}%`,
-          animationDelay: `${delay}s`,
-          animationDuration: `${duration}s`,
-          animationName: 'float-spore',
-          animationIterationCount: 'infinite',
-          animationTimingFunction: 'linear',
-          bottom: '-20px',
-        }}
-      />
-    );
-  });
-  return <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">{spores}</div>;
-};
-
-// Retro CRT Lab Terminal Component for interactive showcase
-const RetroTerminal = () => {
-  const [activeTab, setActiveTab] = React.useState('system');
-  const [typedText, setTypedText] = React.useState('');
-  const [isTyping, setIsTyping] = React.useState(false);
-
-  const logs = {
-    system: `[HAWKINS LAB ARCHIVE // PROJECT REARC]
-STATUS: OPERATIONAL
-CLASSIFIED LEVEL: DEEP VOID
-------------------------------------------
->> DECRYPTING INTEL CHANNELS...
->> PORTAL STATUS: STABLE (STRENGTH 89%)
->> NEURAL INTEGRATION: CONNECTED
->> SUBJECT ALIGNMENT: FORGING REDEMPTION
->> WARNING: HIGH LEVELS OF PSYCHIC ENERGY DETECTED
-------------------------------------------
-DAILY MISSION SUCCESS RATE REQUIRED: > 80%`,
-    mission: `>> RETRIEVING CURRENT DIRECTIVES...
-------------------------------------------
-MISSION ID: ARC-912
-OBJECTIVE: ESCAPE THE MIND FLAYER
-REWARD: +500 XP // LEVEL UP RANK
-THREAT LEVEL: COGNITIVE OVERLOAD
-------------------------------------------
-STATUS LOGS:
-- DEFEND FOCUS BLOCK: PENDING
-- SYNAPSE SYNC: COMPLETE
-- INGEST KNOWLEDGE CORRECTIONS: ACTIVE`,
-    psychic: `>> MEASURING PSYCHIC FOCUS STREAKS...
-------------------------------------------
-STREAK MATRIX:
-MON [X]   TUE [X]   WED [X]   THU [ ]
-FRI [ ]   SAT [ ]   SUN [ ]
-------------------------------------------
->> NOTICE: COMPILING A 3-DAY CHAIN FORGE.
->> DO NOT BREAK THE STREAK, OR THE VOID
-   WILL ENVELOPE YOUR PROGRESS.`,
-  };
-
-  React.useEffect(() => {
-    setIsTyping(true);
-    setTypedText('');
-    let index = 0;
-    const fullText = logs[activeTab];
-    const interval = setInterval(() => {
-      if (index < fullText.length) {
-        setTypedText((prev) => prev + fullText.charAt(index));
-        index++;
-      } else {
-        clearInterval(interval);
-        setIsTyping(false);
-      }
-    }, 10);
-    return () => clearInterval(interval);
-  }, [activeTab]);
-
-  return (
-    <div className="w-full max-w-3xl bg-[#07070B] border-2 border-red-950 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(229,9,20,0.15)] relative">
-      {/* CRT Scanline and Bezel Overlay */}
-      <div className="absolute inset-0 crt-scanlines pointer-events-none z-20"></div>
-      
-      {/* Terminal Title Bar */}
-      <div className="bg-[#120606] px-6 py-4 border-b border-red-950/80 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_#e50914]"></div>
-          <span className="font-vt323 text-red-500 text-lg tracking-wider">HAWKINS_TERMINAL_V1.09</span>
-        </div>
-        <div className="text-[10px] text-red-700/60 font-mono tracking-widest uppercase">
-          SECURE CONNECTION // ARC
-        </div>
-      </div>
-
-      <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 relative z-10">
-        {/* Terminal Controls */}
-        <div className="flex md:flex-col gap-2 md:w-1/4">
-          <button
-            onClick={() => setActiveTab('system')}
-            className={`px-4 py-3 rounded-lg font-vt323 text-left tracking-wider text-base uppercase transition-all duration-300 ${activeTab === 'system' ? 'bg-red-950/50 text-red-400 border border-red-800/60 shadow-[0_0_15px_rgba(229,9,20,0.2)]' : 'text-red-700 hover:text-red-500 bg-transparent border border-transparent'}`}
-          >
-            [SYSTEM LOGS]
-          </button>
-          <button
-            onClick={() => setActiveTab('mission')}
-            className={`px-4 py-3 rounded-lg font-vt323 text-left tracking-wider text-base uppercase transition-all duration-300 ${activeTab === 'mission' ? 'bg-red-950/50 text-red-400 border border-red-800/60 shadow-[0_0_15px_rgba(229,9,20,0.2)]' : 'text-red-700 hover:text-red-500 bg-transparent border border-transparent'}`}
-          >
-            [MISSIONS]
-          </button>
-          <button
-            onClick={() => setActiveTab('psychic')}
-            className={`px-4 py-3 rounded-lg font-vt323 text-left tracking-wider text-base uppercase transition-all duration-300 ${activeTab === 'psychic' ? 'bg-red-950/50 text-red-400 border border-red-800/60 shadow-[0_0_15px_rgba(229,9,20,0.2)]' : 'text-red-700 hover:text-red-500 bg-transparent border border-transparent'}`}
-          >
-            [STREAK LINK]
-          </button>
-        </div>
-
-        {/* Console Output Screen */}
-        <div className="flex-1 bg-[#020204] border border-red-950/50 rounded-xl p-5 min-h-[220px] font-vt323 text-red-500 text-lg md:text-xl leading-relaxed whitespace-pre-wrap relative overflow-hidden select-none">
-          <div className="absolute top-2 right-3 text-[10px] text-red-700 font-mono">
-            {isTyping ? 'RUNNING...' : 'READY'}
-          </div>
-          {typedText}
-          <span className="inline-block w-2.5 h-5 ml-1 bg-red-500 animate-pulse"></span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // Landing Page Component
 const LandingPage = () => {
-  const scrollToDeep = () => {
-    document.getElementById('deep-rift-section')?.scrollIntoView({ behavior: 'smooth' });
+  const [activeFaction, setActiveFaction] = useState('dsa');
+  const [terminalLogs, setTerminalLogs] = useState([
+    "SYSTEM: Booting Redemption Arc OS...",
+    "SYSTEM: Establishing secure quantum gateway...",
+    "SYSTEM: Operative interface initialized.",
+    "STATUS: Ready to calibrate."
+  ]);
+
+  // Dynamic log simulator
+  useEffect(() => {
+    const logPool = [
+      "[STREAK] Operative secured 7-day focus loop.",
+      "[AI_CORE] Prompt optimization complete. Engine temperature stable.",
+      "[MISSION] Daily task 'Optimize database query' resolved.",
+      "[XP] +250 XP awarded to active operative.",
+      "[SECURITY] Encrypted session key rotated successfully.",
+      "[MLOPS] Core model weights updated. Calibration: 99.8% precision.",
+      "[DSA] Dynamic programming matrix resolved in 8.4ms.",
+      "[MENTOR] Guidance protocol deployed. Focus efficiency +20%.",
+      "[FOCUS] Deep work environment locked. Staggering notifications.",
+      "[CALENDAR] Synchronized weekly event matrix successfully."
+    ];
+
+    const interval = setInterval(() => {
+      const randomLog = logPool[Math.floor(Math.random() * logPool.length)];
+      const timestamp = new Date().toLocaleTimeString();
+      setTerminalLogs(prev => [...prev.slice(-5), `[${timestamp}] ${randomLog}`]);
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const factions = {
+    dsa: {
+      name: "Faction DSA",
+      color: "from-orange-500 to-red-600",
+      textColor: "text-orange-400",
+      borderColor: "border-orange-500/30",
+      glowColor: "shadow-orange-500/20",
+      tagline: "Algorithms & Logic Optimizers",
+      desc: "For operatives obsessed with structural elegance, optimized pathways, and resolving complex spatial complexities with absolute mathematical precision.",
+      stats: { sync: 94, efficiency: 98, xp: "1.5x" },
+      icon: <Cpu className="w-6 h-6 text-orange-400" />
+    },
+    mlops: {
+      name: "Faction MLOps",
+      color: "from-blue-500 to-indigo-600",
+      textColor: "text-blue-400",
+      borderColor: "border-blue-500/30",
+      glowColor: "shadow-blue-500/20",
+      tagline: "Scale & Deploy Operators",
+      desc: "For builders of intelligence pipelines, orchestrators of massive computation layers, and guardians of reliable continuous delivery metrics.",
+      stats: { sync: 97, efficiency: 92, xp: "1.3x" },
+      icon: <Activity className="w-6 h-6 text-blue-400" />
+    },
+    mentor: {
+      name: "Faction Mentor",
+      color: "from-purple-500 to-pink-600",
+      textColor: "text-purple-400",
+      borderColor: "border-purple-500/30",
+      glowColor: "shadow-purple-500/20",
+      tagline: "System Guidance & Architecture",
+      desc: "For high-level strategists, master designers of scalable ecosystems, and keepers of standard design practices who guide younger node processes.",
+      stats: { sync: 91, efficiency: 96, xp: "1.6x" },
+      icon: <Crown className="w-6 h-6 text-purple-400" />
+    },
+    focus: {
+      name: "Faction Focus",
+      color: "from-emerald-500 to-teal-600",
+      textColor: "text-emerald-400",
+      borderColor: "border-emerald-500/30",
+      glowColor: "shadow-emerald-500/20",
+      tagline: "Deep Work Protocol Specialists",
+      desc: "For dedicated operatives who value uninterrupted flow blocks, flow state preservation, and zero-distraction focus sprints above all else.",
+      stats: { sync: 99, efficiency: 95, xp: "1.4x" },
+      icon: <Target className="w-6 h-6 text-emerald-400" />
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative bg-[#040203] font-inter text-textMain overflow-y-auto">
-      {/* Immersive Spores */}
-      <FloatingSpores />
+    <div className="min-h-screen flex flex-col relative bg-[#030305] font-inter text-textMain scroll-smooth selection:bg-primary/30">
       
-      {/* Immersive Atmospheric Lighting */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/20 via-black to-[#050304] pointer-events-none"></div>
-      <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-red-900/10 blur-[150px] animate-pulse-slow"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-red-950/15 blur-[150px] animate-float"></div>
-      
-      {/* Scanline background overlay */}
-      <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] animate-scanline mix-blend-overlay"></div>
+      {/* Immersive Background Elements */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-primary/5 blur-[150px] animate-pulse-slow"></div>
+      <div className="absolute bottom-[20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/5 blur-[150px] animate-float"></div>
+      <div className="absolute inset-0 opacity-15 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] animate-scanline mix-blend-overlay pointer-events-none"></div>
 
-      {/* Navigation bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-5 flex justify-between items-center backdrop-blur-md border-b border-red-950/40 bg-black/40">
+      {/* Navigation Header */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-6 flex justify-between items-center backdrop-blur-md border-b border-white/5 bg-black/40">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-black/50 border border-red-900/40 flex items-center justify-center shadow-[0_0_15px_rgba(229,9,20,0.15)]">
-            <span className="font-vt323 font-black text-2xl text-red-600 text-glow-red animate-pulse">Ω</span>
+          <div className="w-10 h-10 rounded-xl bg-black/60 border border-primary/20 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.25)]">
+            <Activity className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-garamond font-black text-2xl tracking-[0.25em] text-red-600 text-glow-red uppercase select-none">REARC</span>
+          <span className="font-outfit font-black text-2xl tracking-[0.2em] text-white">REARC</span>
         </div>
         <div className="flex gap-6 items-center">
-          <Link to="/login" className="text-sm font-bold tracking-widest text-red-500/80 hover:text-red-400 transition-colors uppercase font-vt323">[ Login ]</Link>
-          <Link to="/signup" className="text-xs tracking-[0.2em] bg-red-700 text-white hover:bg-red-600 px-6 py-3 rounded-lg font-black uppercase shadow-[0_0_20px_rgba(229,9,20,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 font-vt323 border border-red-500/30">INITIALIZE ARC</Link>
+          <Link to="/login" className="text-sm font-bold tracking-widest text-textMuted hover:text-white transition-colors uppercase">Login</Link>
+          <Link to="/signup" className="text-xs tracking-[0.2em] bg-primary text-black hover:opacity-90 px-6 py-3 rounded-lg transition-all font-black uppercase shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-105 active:scale-95">Initialize</Link>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <div className="min-h-screen flex flex-col items-center justify-center pt-28 px-4 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 1, ease: "easeOut" }} 
-          className="z-10 text-center max-w-5xl px-4 relative flex flex-col items-center"
-        >
-          {/* Faction Header Banner */}
-          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-red-900/50 bg-black/60 mb-10 backdrop-blur-md shadow-[0_0_30px_rgba(229,9,20,0.15)]">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_#e50914]"></span>
-            <span className="text-[11px] font-vt323 tracking-[0.35em] text-red-500 uppercase">SYSTEM DIAGNOSTICS: STABLE // REDEMPTION PROTOCOL</span>
-          </div>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4">
+        <div className="z-10 text-center max-w-5xl relative flex flex-col items-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.6 }} 
+            className="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-primary/30 bg-black/60 mb-8 backdrop-blur-md shadow-[0_0_25px_rgba(168,85,247,0.15)]"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(168,85,247,1)]"></span>
+            <span className="text-xs font-black tracking-[0.35em] text-primary uppercase">Elite Discipline OS Active</span>
+          </motion.div>
           
-          {/* Stranger Things Inspired Glowing Red Logo Title */}
-          <div className="flex flex-col items-center select-none font-garamond mb-12 relative">
-            {/* Top neon bar */}
-            <div className="w-48 md:w-80 h-[2.5px] bg-red-600 shadow-[0_0_20px_#e50914] mb-4 animate-pulse"></div>
-            
-            <h1 className="stranger-title text-7xl md:text-[9.5rem] font-black leading-none uppercase tracking-widest text-center select-none">
-              REARC
-            </h1>
-            
-            {/* Bottom neon bar */}
-            <div className="w-64 md:w-[28rem] h-[2.5px] bg-red-600 shadow-[0_0_20px_#e50914] mt-4 animate-pulse"></div>
-            
-            <span className="font-vt323 text-red-500/80 tracking-[0.45em] uppercase text-xs md:text-sm mt-5 text-glow-red flicker-slow">
-              // WARNING: PREPARE FOR DEEP COGNITIVE RECONSTRUCT //
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8, delay: 0.1 }} 
+            className="text-5xl md:text-[6.5rem] font-black mb-8 tracking-tighter leading-[1] text-white"
+          >
+            BUILD YOUR <br/>
+            <span className="neon-flicker text-transparent bg-clip-text bg-gradient-to-br from-white via-primary to-secondary">
+              REDEMPTION ARC
             </span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8, delay: 0.2 }} 
+            className="text-lg md:text-xl text-textMuted mb-12 max-w-3xl mx-auto font-medium leading-relaxed"
+          >
+            An emotionally immersive productivity universe designed for serious operatives to forge discipline, maintain consistency, and execute critical daily missions.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6, delay: 0.3 }} 
+            className="flex flex-col sm:flex-row items-center justify-center gap-8 relative z-20"
+          >
+            <Link to="/signup" className="group relative rounded-2xl bg-white text-black px-12 py-5 font-black transition-transform hover:-translate-y-1 active:translate-y-0 flex items-center gap-3 overflow-hidden shadow-[0_0_35px_rgba(255,255,255,0.2)]">
+              <div className="absolute inset-0 bg-primary/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 skew-x-12"></div>
+              <span className="relative z-10 flex items-center gap-2 tracking-[0.1em] uppercase">Enter The Universe <ChevronRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" /></span>
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Cinematic Wireframe Perspective Grid */}
+        <div className="absolute bottom-0 left-0 right-0 h-[35vh] perspective-grid-container pointer-events-none overflow-hidden z-0">
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#030305] to-[#030305] z-10"></div>
+          <div className="w-full h-[200%] perspective-grid opacity-60"></div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-textMuted/60 animate-bounce pointer-events-none">
+          <span className="text-[10px] tracking-[0.4em] uppercase font-black">Scroll to Calibrate</span>
+          <ChevronRight className="w-4 h-4 rotate-90" />
+        </div>
+      </section>
+
+      {/* Protocol Phases Section */}
+      <section className="py-24 px-8 max-w-7xl mx-auto w-full relative z-10">
+        <div className="text-center mb-16">
+          <span className="text-xs font-black tracking-[0.4em] text-primary uppercase block mb-3">System Blueprint</span>
+          <h2 className="text-4xl md:text-5xl font-black text-white">THE ARCHITECTURE PHASES</h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              step: "01",
+              title: "Console Calibration",
+              desc: "Deploy customized setup parameters and choose your operational theme matrix.",
+              icon: <Cpu className="w-8 h-8 text-primary" />
+            },
+            {
+              step: "02",
+              title: "Align Factions",
+              desc: "Choose specialized task methodologies and dynamic guidance profiles.",
+              icon: <Zap className="w-8 h-8 text-secondary" />
+            },
+            {
+              step: "03",
+              title: "Execute Missions",
+              desc: "Tackle target constraints daily with real-time feedback loops.",
+              icon: <Target className="w-8 h-8 text-blue-400" />
+            },
+            {
+              step: "04",
+              title: "Quantum Growth",
+              desc: "Generate streak nodes, gather core system XP, and monitor evolution metrics.",
+              icon: <Crown className="w-8 h-8 text-purple-400" />
+            }
+          ].map((phase, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="bg-[#0A0A0F]/80 backdrop-blur-md border border-white/5 p-8 rounded-2xl relative overflow-hidden group hover:border-primary/30 transition-all duration-300"
+            >
+              <div className="absolute top-0 right-0 text-[10rem] leading-none font-black text-white/[0.02] select-none translate-x-4 -translate-y-4 group-hover:text-primary/[0.04] transition-all">
+                {phase.step}
+              </div>
+              <div className="mb-6 p-3 bg-white/5 rounded-xl w-fit group-hover:scale-110 transition-transform">
+                {phase.icon}
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">{phase.title}</h3>
+              <p className="text-textMuted text-sm leading-relaxed">{phase.desc}</p>
+              <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-500"></div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Faction Simulator Section */}
+      <section className="py-24 px-8 max-w-6xl mx-auto w-full relative z-10">
+        <div className="bg-[#0A0A10]/60 backdrop-blur-xl border border-white/5 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            {/* Left Column: Selector list */}
+            <div className="lg:col-span-5 space-y-6">
+              <div>
+                <span className="text-xs font-black tracking-[0.4em] text-secondary uppercase block mb-2">Calibration Hub</span>
+                <h2 className="text-3xl md:text-4xl font-black text-white">SELECT YOUR DISCIPLINE</h2>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                {Object.entries(factions).map(([key, f]) => {
+                  const isActive = activeFaction === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setActiveFaction(key)}
+                      className={`flex items-center justify-between p-4 rounded-xl border text-left transition-all ${
+                        isActive 
+                        ? `bg-white/5 border-primary/40 shadow-lg shadow-primary/5` 
+                        : 'border-white/5 bg-transparent hover:bg-white/[0.02] hover:border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {f.icon}
+                        <div>
+                          <div className={`font-bold text-sm ${isActive ? 'text-white' : 'text-textMuted'}`}>{f.name}</div>
+                          <div className="text-[10px] text-textMuted/60 font-medium">{f.tagline}</div>
+                        </div>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 text-textMuted/40 transition-transform ${isActive ? 'translate-x-1 text-white' : ''}`} />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Column: Display Panel */}
+            <div className="lg:col-span-7 bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 relative min-h-[350px] flex flex-col justify-between">
+              
+              {/* Particle Core graphic at top right */}
+              <div className="absolute top-6 right-6 w-16 h-16 rounded-full flex items-center justify-center border border-white/5">
+                <div className={`w-8 h-8 rounded-full bg-gradient-to-tr ${factions[activeFaction].color} animate-pulse blur-[8px]`}></div>
+                <div className={`absolute w-3 h-3 rounded-full bg-white animate-ping`}></div>
+              </div>
+
+              <div>
+                <div className={`inline-block px-3 py-1 rounded border text-[10px] font-black tracking-widest uppercase mb-4 ${factions[activeFaction].borderColor} ${factions[activeFaction].textColor}`}>
+                  Active Protocol Matrix
+                </div>
+                
+                <h3 className="text-2xl font-black text-white mb-2">{factions[activeFaction].name}</h3>
+                <p className="text-textMuted text-sm leading-relaxed mb-6">
+                  {factions[activeFaction].desc}
+                </p>
+              </div>
+
+              {/* Stats readout */}
+              <div className="space-y-4 pt-6 border-t border-white/5">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <div className="text-[10px] text-textMuted/60 uppercase font-black">Sync Rate</div>
+                    <div className="text-xl font-bold text-white mt-1">{factions[activeFaction].stats.sync}%</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-textMuted/60 uppercase font-black">Core Load</div>
+                    <div className="text-xl font-bold text-white mt-1">{factions[activeFaction].stats.efficiency}%</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-textMuted/60 uppercase font-black">XP Modifier</div>
+                    <div className="text-xl font-bold text-primary mt-1">{factions[activeFaction].stats.xp}</div>
+                  </div>
+                </div>
+
+                {/* Animated loading bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[9px] text-textMuted font-bold">
+                    <span>SECTOR CALIBRATION STATUS</span>
+                    <span>99.2% READY</span>
+                  </div>
+                  <div className="bg-white/5 rounded-full h-1.5 overflow-hidden">
+                    <div className={`bg-gradient-to-r ${factions[activeFaction].color} h-full w-[99.2%] shadow-[0_0_8px_rgba(168,85,247,0.4)]`}></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Terminal logs mockup */}
+      <section className="py-16 px-8 max-w-4xl mx-auto w-full relative z-10">
+        <div className="bg-[#050508]/90 border border-white/5 rounded-2xl overflow-hidden font-mono shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+          {/* Window header */}
+          <div className="bg-[#0A0A0F] px-4 py-3 border-b border-white/5 flex items-center justify-between">
+            <div className="flex gap-2">
+              <span className="w-3 h-3 rounded-full bg-red-500/30 border border-red-500/50"></span>
+              <span className="w-3 h-3 rounded-full bg-yellow-500/30 border border-yellow-500/50"></span>
+              <span className="w-3 h-3 rounded-full bg-emerald-500/30 border border-emerald-500/50"></span>
+            </div>
+            <span className="text-[11px] text-textMuted font-semibold">rearc_operative_shell.sh</span>
+            <span className="w-4 h-4 text-textMuted/20 text-xs">■</span>
           </div>
           
-          <p className="text-lg md:text-xl font-garamond italic text-red-200/70 mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-            "We are not defined by the void. We build bridges across the rift, forging discipline and order where chaos and distraction seek to consume our potential."
-          </p>
+          {/* Terminal content */}
+          <div className="p-6 text-sm text-emerald-400 space-y-2 h-[220px] overflow-y-auto custom-scrollbar select-none">
+            {terminalLogs.map((log, index) => (
+              <div key={index} className="flex gap-3 leading-relaxed transition-opacity duration-300">
+                <span className="text-emerald-500/50">{">"}</span>
+                <span>{log}</span>
+              </div>
+            ))}
+            <div className="flex items-center gap-1">
+              <span className="text-emerald-500/50">{">"}</span>
+              <span className="w-2 h-4 bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 relative z-20 mb-12">
-            <Link to="/signup" className="group relative rounded-xl bg-red-700 border border-red-500/40 text-white px-10 py-5 font-vt323 text-xl tracking-[0.15em] transition-all hover:scale-105 active:scale-95 flex items-center gap-3 overflow-hidden shadow-[0_0_40px_rgba(229,9,20,0.3)]">
-              <div className="absolute inset-0 bg-red-600 group-hover:translate-x-full -translate-x-full transition-transform duration-500 skew-x-12"></div>
-              <span className="relative z-10 flex items-center gap-3 uppercase font-black">
-                ENTER THE GATEWAY <ChevronRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
-              </span>
+      {/* Call To Action Gateway */}
+      <section className="py-24 px-8 text-center relative z-10 max-w-4xl mx-auto">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="space-y-8"
+        >
+          <h2 className="text-4xl md:text-5xl font-black text-white">READY TO EMBARK?</h2>
+          <p className="text-textMuted max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+            Your calibration metrics are aligned. The console is initialized. Launch your redemption sequence right now.
+          </p>
+          
+          <div>
+            <Link 
+              to="/signup" 
+              className="inline-flex items-center gap-3 px-12 py-5 rounded-2xl bg-gradient-to-r from-primary to-secondary text-white font-black uppercase tracking-widest text-sm shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:scale-105 active:scale-95 transition-transform"
+            >
+              Initialize Node <Cpu className="w-4 h-4" />
             </Link>
           </div>
-
-          {/* Smooth Scroll Indicator */}
-          <button 
-            onClick={scrollToDeep}
-            className="animate-bounce flex flex-col items-center gap-2 mt-4 text-red-700/60 hover:text-red-500 transition-colors font-vt323 cursor-pointer z-20"
-          >
-            <span className="text-xs uppercase tracking-widest">SCROLL DOWN INTO THE RIFT</span>
-            <div className="w-5 h-8 rounded-full border border-red-800/40 flex items-start justify-center p-1">
-              <div className="w-1 h-2 bg-red-600 rounded-full animate-scroll-down"></div>
-            </div>
-          </button>
-          
         </motion.div>
-        
-        {/* Animated Cinematic Rift Glow Background */}
-        <div className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[700px] h-[700px] pointer-events-none opacity-40 flex items-center justify-center">
-           <div className="absolute inset-0 rounded-full border border-red-800/10 animate-spin-slow"></div>
-           <div className="absolute inset-10 rounded-full border border-red-900/10 animate-spin-slow" style={{animationDirection: 'reverse', animationDuration: '22s'}}></div>
-           <div className="w-[300px] h-[300px] rounded-full bg-gradient-to-t from-red-600/20 to-transparent blur-[70px]"></div>
-        </div>
-      </div>
-
-      {/* SECTION 2: THE UPSIDE DOWN RIFT DETAILS */}
-      <section id="deep-rift-section" className="py-32 px-6 md:px-12 relative z-20 border-t border-red-950/40 bg-[#050304]/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto">
-          
-          <div className="text-center mb-20 flex flex-col items-center">
-            <span className="font-vt323 text-red-600 tracking-[0.3em] uppercase text-sm mb-3 text-glow-red">// RIFT CHRONICLES //</span>
-            <h2 className="text-4xl md:text-5xl font-garamond font-black text-white uppercase tracking-wider mb-6">
-              THE UPSIDE DOWN OF <span className="text-red-600 text-glow-red">PRODUCTIVITY</span>
-            </h2>
-            <div className="w-24 h-[1px] bg-red-800"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-            {/* Feature card 1 */}
-            <div className="group bg-black/40 border border-red-950/60 p-8 rounded-2xl relative overflow-hidden red-portal-glow transition-all duration-500 hover:-translate-y-2">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-950/10 to-transparent pointer-events-none"></div>
-              <div className="w-12 h-12 rounded-xl bg-red-950/30 border border-red-900/30 flex items-center justify-center mb-6 text-red-500 group-hover:scale-110 transition-transform">
-                <Target className="w-6 h-6 text-red-600" />
-              </div>
-              <h3 className="text-xl font-vt323 tracking-wider text-red-400 uppercase mb-3 font-bold">
-                1. MISSION DIRECTIVES
-              </h3>
-              <p className="font-garamond text-red-100/60 leading-relaxed">
-                Receive and execute critical daily protocols designed to build ultimate willpower. Keep the shadows back by keeping consistency active.
-              </p>
-            </div>
-
-            {/* Feature card 2 */}
-            <div className="group bg-black/40 border border-red-950/60 p-8 rounded-2xl relative overflow-hidden red-portal-glow transition-all duration-500 hover:-translate-y-2">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-950/10 to-transparent pointer-events-none"></div>
-              <div className="w-12 h-12 rounded-xl bg-red-950/30 border border-red-900/30 flex items-center justify-center mb-6 text-red-500 group-hover:scale-110 transition-transform">
-                <CalendarIcon className="w-6 h-6 text-red-600" />
-              </div>
-              <h3 className="text-xl font-vt323 tracking-wider text-red-400 uppercase mb-3 font-bold">
-                2. STREAK SHIELDING
-              </h3>
-              <p className="font-garamond text-red-100/60 leading-relaxed">
-                Your progress is tracked in a grid-like void matrix. Lock in chains of consistency to expand the portal bounds and strengthen your mental shields.
-              </p>
-            </div>
-
-            {/* Feature card 3 */}
-            <div className="group bg-black/40 border border-red-950/60 p-8 rounded-2xl relative overflow-hidden red-portal-glow transition-all duration-500 hover:-translate-y-2">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-950/10 to-transparent pointer-events-none"></div>
-              <div className="w-12 h-12 rounded-xl bg-red-950/30 border border-red-900/30 flex items-center justify-center mb-6 text-red-500 group-hover:scale-110 transition-transform">
-                <Cpu className="w-6 h-6 text-red-600" />
-              </div>
-              <h3 className="text-xl font-vt323 tracking-wider text-red-400 uppercase mb-3 font-bold">
-                3. NEURAL COMPANION
-              </h3>
-              <p className="font-garamond text-red-100/60 leading-relaxed">
-                Connect your psychic link to the AI Configuration Engine. Build a companion trained to assist, critique, and oversee your path to dominance.
-              </p>
-            </div>
-          </div>
-
-        </div>
       </section>
 
-      {/* SECTION 3: HAWKINS LAB RETRO INTERACTIVE TERMINAL */}
-      <section className="py-24 px-6 md:px-12 relative z-20 border-t border-red-950/40 bg-black">
-        <div className="max-w-6xl mx-auto flex flex-col items-center">
-          
-          <div className="text-center mb-16 flex flex-col items-center">
-            <span className="font-vt323 text-red-600 tracking-[0.3em] uppercase text-sm mb-3 text-glow-red">// CLASSIFIED INTEL LINK //</span>
-            <h2 className="text-4xl font-garamond font-black text-white uppercase tracking-wider mb-6">
-              HAWKINS COGNITIVE CORE
-            </h2>
-            <p className="text-sm font-vt323 text-red-700/80 uppercase max-w-xl mx-auto tracking-widest leading-relaxed">
-              OPERATE THE CRT TELEMETRY SYSTEM BELOW TO EVALUATE CURRENT MISSION PARAMETERS.
-            </p>
-          </div>
-
-          <RetroTerminal />
-
-        </div>
-      </section>
-
-      {/* SECTION 4: CALL TO ACTION */}
-      <section className="py-32 px-6 relative z-20 border-t border-red-950/40 bg-gradient-to-b from-black to-[#0A0608]">
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-          <div className="w-12 h-12 rounded-full border border-red-900/40 flex items-center justify-center mb-8 bg-red-950/20 text-glow-red">
-            <Shield className="w-6 h-6 text-red-600 animate-pulse" />
-          </div>
-          <h2 className="text-4xl md:text-5xl font-garamond font-black text-white uppercase tracking-wider mb-8">
-            WILL YOU CONQUER THE <br />
-            <span className="text-red-600 stranger-title-glow">SHADOW?</span>
-          </h2>
-          <p className="text-lg font-garamond italic text-red-200/60 mb-12 max-w-2xl leading-relaxed">
-            "Once you enter, your neural links are forged. Discipline is your only defense against the mind's decay. Do not let the portal shut."
-          </p>
-          <Link to="/signup" className="px-12 py-5 bg-red-700 hover:bg-red-600 text-white font-vt323 text-2xl tracking-[0.2em] rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_50px_rgba(229,9,20,0.4)] border border-red-500/40 uppercase font-black">
-            INITIALIZE YOUR COGNITIVE GATEWAY
-          </Link>
-        </div>
-      </section>
-
-      {/* Spooky Footer */}
-      <footer className="py-12 border-t border-red-950/30 bg-[#050304] text-center relative z-20">
-        <p className="font-vt323 text-red-900/60 text-base tracking-[0.25em] uppercase">
-          © 2026 REARC OPERATIONAL DIVISION // DIVISION NO. 11 // ALL RIGHTS RESERVED
-        </p>
+      {/* Footer */}
+      <footer className="mt-auto py-8 border-t border-white/5 text-center text-xs text-textMuted/40 relative z-10">
+        <div>&copy; {new Date().getFullYear()} REARC OPERATIVE NETWORK. ALL RIGHTS RESERVED.</div>
       </footer>
+
     </div>
   );
 };
+
 
 const AnimatedRoutes = () => {
   const location = useLocation();
