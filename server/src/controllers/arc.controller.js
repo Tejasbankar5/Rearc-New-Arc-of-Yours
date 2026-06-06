@@ -1,25 +1,34 @@
 import prisma from '../lib/prisma.js';
-import { GoogleGenAI } from '@google/genai';
+import Groq from 'groq-sdk';
 
 let ai;
-if (process.env.GEMINI_API_KEY) {
-  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+if (process.env.GROQ_API_KEY) {
+  ai = new Groq({ apiKey: process.env.GROQ_API_KEY });
 }
 
 const generateContentWithFallback = async (params) => {
   if (!ai) throw new Error('AI not configured');
+  
+  const messages = [];
+  if (params.config?.systemInstruction) {
+    messages.push({ role: 'system', content: params.config.systemInstruction });
+  }
+  messages.push({ role: 'user', content: params.contents });
+
   try {
-    return await ai.models.generateContent(params);
+    const chatCompletion = await ai.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: messages,
+    });
+    return { text: chatCompletion.choices[0].message.content };
   } catch (err) {
     const errorMsg = err.message || '';
-    if (params.model !== 'gemini-1.5-flash') {
-      console.warn(`Model ${params.model} failed. Falling back to gemini-1.5-flash... Error:`, errorMsg);
-      return await ai.models.generateContent({
-        ...params,
-        model: 'gemini-1.5-flash'
-      });
-    }
-    throw err;
+    console.warn(`Groq primary model failed. Falling back to llama-3.1-8b-instant... Error:`, errorMsg);
+    const chatCompletion = await ai.chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: messages,
+    });
+    return { text: chatCompletion.choices[0].message.content };
   }
 };
 
